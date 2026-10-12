@@ -1,0 +1,23 @@
+# Archivos auxiliares de LaTeX / TeXstudio
+*.aux
+*.log
+*.out
+*.toc
+*.lof
+*.lot
+*.bbl
+*.blg
+*.bcf
+*.run.xml
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.synctex(busy)
+*.nav
+*.snm
+*.vrb
+*.xdv
+*.dvi
+*.bak
+*.backup
+*~
