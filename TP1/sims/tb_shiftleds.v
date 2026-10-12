@@ -4,10 +4,10 @@
 //! @date 29-08-2021
 //! @version Unit01 - Verilog
 
-//! - Shift Register controlled by Switchs 
+//! - Shift Register controlled by Switchs
 //! - **ck_rst** is the system reset, which resets the counter and initializes the shiftregister (SR).
 //! - **i_sw[0]** controls the enable (1) of the counter. The value (0) stops the systems without change of the current state of the counter and the SR.
-//! - The SR is moved only when the counter reached some limit **R0-R3**. 
+//! - The SR is moved only when the counter reached some limit **R0-R3**.
 //! - The choice of the limit can be made at any time during operation.
 //! - **i_sw[3]** chooses the color of the RGB LEDs.
 
