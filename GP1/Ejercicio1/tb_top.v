@@ -33,9 +33,9 @@ module tb_top ();
 
     //! Secuencia de estimulos
     initial begin
-        i_data1 = 3'b000;
-        i_data2 = 3'b000;
-        i_sel   = 2'b00;
+        i_data1 <= 3'b000;
+        i_data2 <= 3'b000;
+        i_sel   <= 2'b00;
         clk     = 1'b0;
         i_rst_n = 1'b0;
 
@@ -48,49 +48,49 @@ module tb_top ();
         #50;
         @(posedge clk);
 
-        i_data1 = 3'b001;
-        i_data2 = 3'b001;
-        i_sel   = 2'b01;
+        i_data1 <= 3'b001;
+        i_data2 <= 3'b001;
+        i_sel   <= 2'b01;
 
         // Desde la mitad de data 2
         #10000;
         @(posedge clk);
 
-        i_data1 = 3'b000;
-        i_data2 = 3'b010;
-        i_sel   = 2'b10;
+        i_data1 <= 3'b000;
+        i_data2 <= 3'b010;
+        i_sel   <= 2'b10;
 
         // Desde la mitad de data 1
         #10000;
         @(posedge clk);
 
-        i_data1 = 3'b010;
-        i_data2 = 3'b000;
-        i_sel   = 2'b00;
+        i_data1 <= 3'b010;
+        i_data2 <= 3'b000;
+        i_sel   <= 2'b00;
 
         // Maximo valor en data 1
         #10000;
         @(posedge clk);
 
-        i_data1 = 3'b111;
-        i_data2 = 3'b001;
-        i_sel   = 2'b00;
+        i_data1 <= 3'b111;
+        i_data2 <= 3'b001;
+        i_sel   <= 2'b00;
 
         // Maximo valor en data 2
         #10000;
         @(posedge clk);
 
-        i_data1 = 3'b001;
-        i_data2 = 3'b111;
-        i_sel   = 2'b10;
+        i_data1 <= 3'b001;
+        i_data2 <= 3'b111;
+        i_sel   <= 2'b10;
 
         // sel en 11 la salida deberia ser 0
         #10000;
         @(posedge clk);
 
-        i_data1 = 3'b001;
-        i_data2 = 3'b001;
-        i_sel   = 2'b11;
+        i_data1 <= 3'b001;
+        i_data2 <= 3'b001;
+        i_sel   <= 2'b11;
 
         #10000;
         $finish;
