@@ -5,6 +5,7 @@
 \usepackage{graphicx}
 \usepackage{amsmath}
 \usepackage{booktabs}
+\usepackage{multirow}
 \usepackage{float}
 \usepackage[hidelinks]{hyperref}
 
@@ -164,29 +165,82 @@
 
 	\subsection{Resultados}
 
-	En la Figura~\ref{fig:vel} se ve un tramo de cada configuración. El LED encendido rota
-	$0 \to 1 \to 2 \to 3 \to 0$ y cada desplazamiento coincide con un pulso de un ciclo de
-	\sig{o\_valid}. Midiendo el tiempo entre desplazamientos en toda la simulación se obtuvo
-	exactamente 160, 320, 640 y 1280\,ns para cada código, es decir $2^{4+k}$ ciclos, como se
-	calculó. También se cumplió después de cada cambio de límite.
+	Las siguientes capturas son del simulador de Vivado. La señal \sig{i\_sw} se muestra
+	como \sig{\{sw[3], sw[2], sw[1], sw[0]\}}, así que, por ejemplo, \sig{0011} significa
+	sistema habilitado con \sig{sw[2:1] = 01} y color azul.
+
+	\paragraph{Reset.} Mientras \sig{i\_reset} está en 0 (activo en bajo), el shift register
+	queda en \sig{0001}, el contador en 0, y como \sig{sw[3] = 0} el estado se ve en el canal
+	azul (Figura~\ref{fig:tb_reset}). En 100\,ns se libera el reset.
 
 	\begin{figure}[H]
 		\centering
-		\includegraphics[width=\textwidth]{figuras/tb_velocidades.pdf}
-		\caption{Simulación: estado del shift register y \sig{o\_valid} para cada límite.}
-		\label{fig:vel}
+		\includegraphics[width=\textwidth,trim=0 102 0 0,clip]{figuras/tb_restart_100ns.png}
+		\caption{Simulación: reset inicial, liberado en 100\,ns.}
+		\label{fig:tb_reset}
 	\end{figure}
 
-	En la Figura~\ref{fig:color} se ve el cambio de color en $t = 3$\,ms. Antes de que
-	\sig{sw[3]} pase a 1, el estado se muestra en \sig{o\_led\_b} y \sig{o\_led\_g} está en
-	cero; después pasa a \sig{o\_led\_g} y el canal azul se apaga. El shift register no
-	pierde su posición, porque el color solo afecta a los multiplexores de salida.
+	\paragraph{Cambios de velocidad.} En las Figuras~\ref{fig:tb_1ms}, \ref{fig:tb_2ms} y
+	\ref{fig:tb_4ms} se ve cada cambio de \sig{sw[2:1]} (cursor amarillo). Con los marcadores
+	(en azul) se midió el tiempo entre dos desplazamientos consecutivos antes y después de
+	cada cambio:
+
+	\begin{table}[H]
+		\centering
+		\begin{tabular}{@{}cccc@{}}
+			\toprule
+			Cambio & \sig{sw[2:1]} & Marcadores [ns] & Intervalo \\
+			\midrule
+			\multirow{2}{*}{1\,ms} & \sig{00} & $999\,875 - 999\,715$ & 160\,ns \\
+			                         & \sig{01} & $1\,000\,835 - 1\,000\,515$ & 320\,ns \\
+			\midrule
+			\multirow{2}{*}{2\,ms} & \sig{01} & $1\,999\,555 - 1\,999\,235$ & 320\,ns \\
+			                         & \sig{10} & $2\,001\,475 - 2\,000\,835$ & 640\,ns \\
+			\midrule
+			\multirow{2}{*}{4\,ms} & \sig{10} & $3\,998\,915 - 3\,998\,275$ & 640\,ns \\
+			                         & \sig{11} & $4\,002\,755 - 4\,001\,475$ & 1280\,ns \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+
+	Los intervalos coinciden con los calculados ($2^{4+k}$ ciclos de 10\,ns) y cada cambio
+	de límite duplica el tiempo entre pasos. El LED encendido sigue rotando
+	$0001 \to 0010 \to 0100 \to 1000 \to 0001$ sin perder la posición al cambiar la
+	velocidad.
 
 	\begin{figure}[H]
 		\centering
-		\includegraphics[width=\textwidth]{figuras/tb_color.pdf}
-		\caption{Simulación: cambio de color con \sig{sw[3]} (línea punteada).}
-		\label{fig:color}
+		\includegraphics[width=\textwidth,trim=0 96 0 0,clip]{figuras/cambio_de_velocidad_1ms.png}
+		\caption{Simulación: cambio de \sig{sw[2:1]} de \sig{00} a \sig{01} en 1\,ms.}
+		\label{fig:tb_1ms}
+	\end{figure}
+
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=\textwidth,trim=0 88 0 0,clip]{figuras/cambio_de_velocidad_2ms.png}
+		\caption{Simulación: cambio de \sig{sw[2:1]} de \sig{01} a \sig{10} en 2\,ms.}
+		\label{fig:tb_2ms}
+	\end{figure}
+
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=\textwidth,trim=0 86 0 0,clip]{figuras/cambio_de_velocidad_4ms.png}
+		\caption{Simulación: cambio de \sig{sw[2:1]} de \sig{10} a \sig{11} en 4\,ms (con los
+		LEDs en verde).}
+		\label{fig:tb_4ms}
+	\end{figure}
+
+	\paragraph{Cambio de color.} En la Figura~\ref{fig:tb_color}, en 3\,ms \sig{sw[3]} pasa a
+	1 (\sig{i\_sw}: \sig{0101} $\to$ \sig{1101}). En ese momento el estado \sig{0010} pasa de
+	\sig{o\_led\_b} a \sig{o\_led\_g} y el canal azul queda en \sig{0000}. El siguiente
+	desplazamiento (\sig{0100}) ya aparece en verde y \sig{o\_led} no se ve afectado, porque
+	el color solo cambia los multiplexores de salida.
+
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=\textwidth,trim=0 85 0 25,clip]{figuras/cambio_de_color_3ms.png}
+		\caption{Simulación: cambio de color con \sig{sw[3]} en 3\,ms.}
+		\label{fig:tb_color}
 	\end{figure}
 
 	% ------------------------------------------------------------------
@@ -210,4 +264,53 @@
 	del cluster, solicitar una FPGA, agregar en el Hardware Manager de Vivado el
 	\emph{remote server} con la IP asignada, y programar la placa. Luego, mediante el VIO y el
 	ILA, se analizó el funcionamiento del diseño implementado en la placa.
+
+	\subsection{VIO}
+
+	En ambas capturas el VIO tiene el control del diseño (\sig{probe\_out0}, \sig{selMux} = 1)
+	y su reset está en 1, es decir, liberado (\sig{probe\_out1}). La salida
+	\sig{probe\_out2} son los switches.
+
+	Con \sig{probe\_out2 = 0} (Figura~\ref{fig:vio_off}) el sistema está deshabilitado
+	(\sig{sw[0] = 0}): las entradas muestran el LED detenido en \sig{2} (\sig{0010}) en el
+	estado y en el canal azul, con el verde en 0, y la columna \emph{Activity} está vacía
+	porque nada cambia. Con \sig{probe\_out2 = 1} (Figura~\ref{fig:vio_on}) se habilita el
+	sistema con \sig{sw[2:1] = 00} y color azul: el estado y el canal azul empiezan a cambiar,
+	lo que el VIO indica con las flechas de actividad, mientras el canal verde sigue en 0.
+
+	\begin{figure}[H]
+		\centering
+		\begin{minipage}[t]{0.48\textwidth}
+			\centering
+			\includegraphics[width=\textwidth]{figuras/VIO_apagado.png}
+			\caption{VIO con el sistema deshabilitado.}
+			\label{fig:vio_off}
+		\end{minipage}\hfill
+		\begin{minipage}[t]{0.48\textwidth}
+			\centering
+			\includegraphics[width=\textwidth]{figuras/VIO_encendido.png}
+			\caption{VIO con el sistema habilitado.}
+			\label{fig:vio_on}
+		\end{minipage}
+	\end{figure}
+
+	\subsection{ILA}
+
+	El ILA guarda una ventana de 1024 muestras con el reloj de 100\,MHz, unos 10\,µs. Como en
+	la placa el LED se desplaza cada $\approx 42$\,ms, una captura libre casi nunca mostraría
+	un cambio. Por eso se configuró un trigger con la condición
+	\sig{probe0 == 2} y \sig{probe1 == 2}, es decir, el instante en que el estado pasa a
+	\sig{0010} en el canal azul. El ILA ubica el trigger en el centro de la ventana
+	(muestra 512), así que la captura (Figura~\ref{fig:ila}) muestra la transición de
+	\sig{1} a \sig{2} en el estado (\sig{probe0}) y en el canal azul (\sig{probe1}), con el
+	canal verde (\sig{probe2}) en 0. Esto confirma en el hardware el mismo comportamiento que
+	en la simulación.
+
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=0.9\textwidth]{figuras/ILA.png}
+		\caption{Captura del ILA con trigger en la transición del estado a \sig{0010}.}
+		\label{fig:ila}
+	\end{figure}
+
 \end{document}
